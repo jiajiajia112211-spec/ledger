@@ -355,18 +355,25 @@
             color: var(--income);
         }
 
+        /* 表单行容器 */
         .form-row {
             display: flex;
+            flex-direction: column;
             gap: 8px;
-            flex-wrap: wrap;
+            align-items: stretch;
+        }
+        .form-row-line {
+            display: flex;
+            gap: 6px;
             align-items: flex-end;
+            flex-wrap: nowrap;
         }
         .form-g {
             display: flex;
             flex-direction: column;
             gap: 4px;
             flex: 1;
-            min-width: 80px;
+            min-width: 60px;
         }
         .form-g label {
             font-size: 0.65rem;
@@ -430,6 +437,7 @@
             flex-shrink: 0;
             min-height: 42px;
             letter-spacing: -0.2px;
+            margin-left: auto; /* 靠右 */
         }
         .btn-submit:active {
             transform: scale(0.94);
@@ -856,11 +864,11 @@
             }
         }
         @media (max-width: 380px) {
-            .form-row {
-                gap: 6px;
+            .form-row-line {
+                gap: 4px;
             }
             .form-g {
-                min-width: 60px;
+                min-width: 50px;
             }
             .form-g input {
                 padding: 9px 10px;
@@ -931,19 +939,25 @@
             </div>
             <div class="quick-chips" id="quickChips"></div>
             <div class="form-row" style="margin-top:6px;">
-                <div class="form-g" style="flex:1.3;min-width:90px;">
-                    <label>金额</label>
-                    <div class="amt-wrap"><span class="cur">¥</span><input type="text" id="inputAmount" placeholder="0.00" inputmode="decimal" autocomplete="off"></div>
+                <!-- 第一行：金额 + 日期 -->
+                <div class="form-row-line">
+                    <div class="form-g" style="flex:1.3;min-width:90px;">
+                        <label>金额</label>
+                        <div class="amt-wrap"><span class="cur">¥</span><input type="text" id="inputAmount" placeholder="0.00" inputmode="decimal" autocomplete="off"></div>
+                    </div>
+                    <div class="form-g" style="flex:0.9;min-width:90px;">
+                        <label>日期</label>
+                        <input type="date" id="inputDate">
+                    </div>
                 </div>
-                <div class="form-g" style="flex:0.9;min-width:90px;">
-                    <label>日期</label>
-                    <input type="date" id="inputDate">
+                <!-- 第二行：备注 + 按钮 -->
+                <div class="form-row-line">
+                    <div class="form-g" style="flex:1;min-width:80px;">
+                        <label>备注（可选）</label>
+                        <input type="text" id="inputNote" placeholder="选填" autocomplete="off" maxlength="80">
+                    </div>
+                    <button class="btn-submit" id="btnSubmit">✓ 记一笔</button>
                 </div>
-                <div class="form-g" style="flex:1;min-width:80px;">
-                    <label>备注</label>
-                    <input type="text" id="inputNote" placeholder="选填" autocomplete="off" maxlength="80">
-                </div>
-                <button class="btn-submit" id="btnSubmit">✓ 记一笔</button>
             </div>
             <div class="chip-row" id="categoryChips"></div>
         </div>
@@ -1176,7 +1190,6 @@
                     updateSummary();
                     updateBudgetBar();
                 }
-                // 滚动到顶部
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
@@ -1228,7 +1241,6 @@
             // ============ 记录列表 ============
             function renderRecordsList() {
                 let records = getRecordsByMonth(currentYear, currentMonth);
-                // 搜索过滤
                 if (searchQuery.trim()) {
                     const q = searchQuery.trim().toLowerCase();
                     records = records.filter(r => r.category.toLowerCase().includes(q) || (r.note && r.note
@@ -1293,7 +1305,6 @@
                 $balanceItem.classList.remove('pos', 'neg');
                 if (bal > 0) $balanceItem.classList.add('pos');
                 else if (bal < 0) $balanceItem.classList.add('neg');
-                // 同步统计页
                 $statsExpense.textContent = `¥${fmt(te)}`;
                 $statsIncome.textContent = `¥${fmt(ti)}`;
                 $statsBalance.textContent = `${bal>=0?'¥':'-¥'}${fmt(Math.abs(bal))}`;
